@@ -22,4 +22,9 @@ fetch:
 run:
 	uv run uvicorn app.main:app --reload
 
+test:
+	PYTHONPATH=. uv run pytest -q
 
+check:
+	uv run ruff check .
+	uv run ruff format --check .
