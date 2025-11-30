@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-
 FPLCACHE_DIR: Path = Path(os.getenv("FPLCACHE_DIR", "vendor/fplcache"))
 CACHE_ROOT: Path = FPLCACHE_DIR / "cache"
 
@@ -41,7 +40,7 @@ def parse_snapshot_datetime(path: Path) -> datetime:
     name = path.name
     if not name.endswith(suffix):
         raise ValueError(f"Snapshot filename must end with '{suffix}': {path}")
-    hhmm = name[:-len(suffix)]
+    hhmm = name[: -len(suffix)]
     if len(hhmm) != 4 or not hhmm.isdigit():
         raise ValueError(f"Snapshot time must be exactly 4 digits HHMM: {path}")
 
@@ -96,5 +95,3 @@ def read_snapshot(path: Path) -> Dict:
                 "or `sudo apt-get install xz-utils` on Linux."
             ) from exc
         return json.loads(result.stdout)
-
-

@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
-from app.data.fplcache_io import parse_snapshot_datetime, read_snapshot
+from app.data.fplcache_io import read_snapshot
 from app.models.fpl import BootstrapStatic
 
 
@@ -17,9 +17,10 @@ class SeasonWindow:
     bootstrap-static is a point-in-time snapshot; we approximate per-gameweek values
     by sampling one snapshot at the end of each GW using the next GW deadline as the boundary.
     """
+
     name: str
     start: datetime  # inclusive
-    end: datetime    # exclusive
+    end: datetime  # exclusive
 
 
 UTC = timezone.utc
@@ -27,12 +28,12 @@ UTC = timezone.utc
 SEASON_2023_24 = SeasonWindow(
     "2023-24",
     datetime(2023, 8, 1, 0, 0, tzinfo=UTC),
-    datetime(2024, 7, 1, 0, 0, tzinfo=UTC),
+    datetime(2024, 6, 1, 0, 0, tzinfo=UTC),
 )
 SEASON_2024_25 = SeasonWindow(
     "2024-25",
     datetime(2024, 8, 1, 0, 0, tzinfo=UTC),
-    datetime(2025, 7, 1, 0, 0, tzinfo=UTC),
+    datetime(2025, 6, 1, 0, 0, tzinfo=UTC),
 )
 
 
@@ -57,7 +58,7 @@ def build_gw_snapshot_index(
     window_snaps.sort(key=lambda x: x[0])
 
     # Load earliest snapshot to extract events metadata
-    first_ts, first_path = window_snaps[0]
+    first_path = window_snaps[0][1]
     raw = read_snapshot(first_path)
     bootstrap = BootstrapStatic.model_validate(raw)
 
@@ -104,34 +105,3 @@ def build_all_indices(
         SEASON_2023_24.name: build_gw_snapshot_index(SEASON_2023_24, snapshots),
         SEASON_2024_25.name: build_gw_snapshot_index(SEASON_2024_25, snapshots),
     }
-
-
-def describe_index(index: Dict[int, Path]) -> Dict[str, object]:
-    """
-    Return a brief summary:
-      - gw_count
-      - min_gw / max_gw
-      - first/last mapped snapshot timestamps (UTC; derived from path)
-    """
-    if not index:
-        return {
-            "gw_count": 0,
-            "min_gw": None,
-            "max_gw": None,
-            "first_snapshot_ts": None,
-            "last_snapshot_ts": None,
-        }
-
-    gw_ids = sorted(index.keys())
-    mapped_paths = [index[i] for i in gw_ids]
-    mapped_ts = [parse_snapshot_datetime(p) for p in mapped_paths]
-    mapped_ts.sort()
-    return {
-        "gw_count": len(gw_ids),
-        "min_gw": gw_ids[0],
-        "max_gw": gw_ids[-1],
-        "first_snapshot_ts": mapped_ts[0],
-        "last_snapshot_ts": mapped_ts[-1],
-    }
-
-
