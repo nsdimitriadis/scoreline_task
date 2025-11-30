@@ -27,12 +27,12 @@ UTC = timezone.utc
 SEASON_2023_24 = SeasonWindow(
     "2023-24",
     datetime(2023, 8, 1, 0, 0, tzinfo=UTC),
-    datetime(2024, 6, 1, 0, 0, tzinfo=UTC),
+    datetime(2024, 7, 1, 0, 0, tzinfo=UTC),
 )
 SEASON_2024_25 = SeasonWindow(
     "2024-25",
     datetime(2024, 8, 1, 0, 0, tzinfo=UTC),
-    datetime(2025, 6, 1, 0, 0, tzinfo=UTC),
+    datetime(2025, 7, 1, 0, 0, tzinfo=UTC),
 )
 
 
