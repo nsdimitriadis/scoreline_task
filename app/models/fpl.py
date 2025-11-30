@@ -30,6 +30,7 @@ class Element(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     id: int
+    code: int
     web_name: str
     total_points: int
 
@@ -39,5 +40,3 @@ class BootstrapStatic(BaseModel):
 
     events: List[Event]
     elements: List[Element]
-
-
